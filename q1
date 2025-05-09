@@ -1,148 +1,146 @@
 #include <iostream>
 #include <vector>
-#include <string>
-#include <algorithm>
-
 using namespace std;
 
-// ------------------------
-// Student Class Definition
-// ------------------------
 class Student {
 private:
+    int rollno, age;
     string name;
-    int rollNumber;
-    float cgpa;
-    vector<string> courses;
 
 public:
-    // Default Constructor
-    Student() : name("N/A"), rollNumber(0), cgpa(0.0f) {}
-
-    // Parameterized Constructor
-    Student(string name, int rollNumber, float cgpa) {
-        this->name = name;
-        this->rollNumber = rollNumber;
-        setCGPA(cgpa);  // validation inside
+    Student(int stdRollno, string stdName, int stdAge) {
+        rollno = stdRollno;
+        name = stdName;
+        age = stdAge;
     }
 
-    // Copy Constructor
-    Student(const Student& other) {
-        name = other.name;
-        rollNumber = other.rollNumber;
-        cgpa = other.cgpa;
-        courses = other.courses;
+    void setRollno(int stdRollno) {
+        rollno = stdRollno;
     }
 
-    // Destructor
-    ~Student() {
-        // Vector automatically cleaned up, just for demonstration
-        cout << "Destructor called for student: " << name << endl;
+    int getRollno() const {
+        return rollno;
     }
 
-    // Method to add a course
-    void addCourse(const string& course) {
-        if (find(courses.begin(), courses.end(), course) != courses.end()) {
-            cout << "Course already enrolled.\n";
-        } else {
-            courses.push_back(course);
-            cout << "Course added successfully.\n";
-        }
+    void setName(string stdName) {
+        name = stdName;
     }
 
-    // Method to update CGPA
-    void setCGPA(float newCGPA) {
-        if (newCGPA >= 0.0 && newCGPA <= 4.0) {
-            cgpa = newCGPA;
-        } else {
-            cout << "Invalid CGPA. Must be between 0.0 and 4.0.\n";
-        }
+    string getName() const {
+        return name;
     }
 
-    // Method to display student information
-    void displayInfo() const {
-        cout << "\n--- Student Information ---\n";
-        cout << "Name: " << name << "\n";
-        cout << "Roll Number: " << rollNumber << "\n";
-        cout << "CGPA: " << cgpa << "\n";
-        cout << "Courses Enrolled: ";
-        if (courses.empty()) {
-            cout << "None";
-        } else {
-            for (const auto& course : courses) {
-                cout << course << " ";
-            }
-        }
-        cout << "\n-----------------------------\n";
+    void setAge(int stdAge) {
+        age = stdAge;
     }
 
-    // Getters
-    int getRollNumber() const { return rollNumber; }
+    int getAge() const {
+        return age;
+    }
+
+    void displayStudent() const {
+        cout << "Roll No: " << rollno << endl;
+        cout << "Name: " << name << endl;
+        cout << "Age: " << age << endl;
+    }
 };
 
-// -----------------------------
-// StudentManagementSystem Class
-// -----------------------------
-class StudentManagementSystem {
-private:
-    vector<Student> students;
+// Function to add a new student
+void addNewStudent(vector<Student> &students) {
+    int rollno, age;
+    string name;
 
-public:
-    // Add a new student
-    void addStudent(const Student& student) {
-        students.push_back(student);
-        cout << "Student added successfully.\n";
-    }
+    cout << "Enter Roll No: ";
+    cin >> rollno;
 
-    // Search student by roll number
-    Student* searchStudent(int rollNumber) {
-        for (auto& student : students) {
-            if (student.getRollNumber() == rollNumber) {
-                return &student;
-            }
-        }
-        return nullptr;
-    }
-
-    // Display all students
-    void displayAllStudents() const {
-        if (students.empty()) {
-            cout << "No student records found.\n";
+    for (const Student &s : students) {
+        if (s.getRollno() == rollno) {
+            cout << "\t\tStudent Already Exists" << endl;
             return;
         }
+    }
 
-        for (const auto& student : students) {
-            student.displayInfo();
+    cout << "Enter Name: ";
+    cin.ignore(); // clear newline before getline
+    getline(cin, name);
+
+    cout << "Enter Age: ";
+    cin >> age;
+
+    Student newStudent(rollno, name, age);
+    students.push_back(newStudent);
+    cout << "\t\tStudent Added Successfully!" << endl;
+}
+
+// Function to display all students
+void displayAllStudents(const vector<Student> &students) {
+    if (students.empty()) {
+        cout << "\t\tNo student found" << endl;
+        return;
+    }
+    for (const Student &s : students) {
+        s.displayStudent();
+        cout << "---------------------" << endl;
+    }
+}
+
+// Function to search for a student
+void searchStudent(const vector<Student> &students) {
+    int rollno;
+    cout << "\t\tEnter Roll No: ";
+    cin >> rollno;
+
+    for (const Student &s : students) {
+        if (s.getRollno() == rollno) {
+            cout << "\t\t------------- Student Found --------------" << endl;
+            s.displayStudent();
+            return;
         }
     }
-};
+    cout << "\t\tStudent Not Found" << endl;
+}
 
-// -----------------------------
-// Main Function (Test Interface)
-// -----------------------------
 int main() {
-    StudentManagementSystem sms;
+    vector<Student> students;
+    students.push_back(Student(1, "Lisa Smith", 20)); // sample data
 
-    // Creating students using different constructors
-    Student s1("Alice", 101, 3.5);
-    Student s2("Bob", 102, 3.8);
-    Student s3(s2); // Copy constructor
+    char choice;
+    do {
+        int op;
+        cout << "\n\t\t-----------------------------------" << endl;
+        cout << "\t\tStudent Management System" << endl;
+        cout << "\t\t-----------------------------------" << endl;
+        cout << "\t\t1. Add New Student" << endl;
+        cout << "\t\t2. Display All Students" << endl;
+        cout << "\t\t3. Search Student" << endl;
+        cout << "\t\t4. Exit" << endl;
+        cout << "\t\tEnter Your Choice: ";
+        cin >> op;
 
-    // Adding students
-    sms.addStudent(s1);
-    sms.addStudent(s2);
-    sms.addStudent(s3);
+        switch (op) {
+            case 1:
+                addNewStudent(students);
+                break;
+            case 2:
+                displayAllStudents(students);
+                break;
+            case 3:
+                searchStudent(students);
+                break;
+            case 4:
+                cout << "\t\tExiting Program..." << endl;
+                return 0;
+            default:
+                cout << "\t\tInvalid Choice. Try again." << endl;
+        }
 
-    // Add courses to Alice
-    Student* student = sms.searchStudent(101);
-    if (student) {
-        student->addCourse("Mathematics");
-        student->addCourse("Physics");
-        student->setCGPA(3.9);
-    }
+        cout << "\t\tDo You Want to Continue [Y/N]? : ";
+        cin >> choice;
 
-    // Display all students
-    sms.displayAllStudents();
+    } while (choice == 'y' || choice == 'Y');
 
     return 0;
 }
+ 
+     
+    
