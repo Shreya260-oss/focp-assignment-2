@@ -1,0 +1,148 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+// ------------------------
+// Student Class Definition
+// ------------------------
+class Student {
+private:
+    string name;
+    int rollNumber;
+    float cgpa;
+    vector<string> courses;
+
+public:
+    // Default Constructor
+    Student() : name("N/A"), rollNumber(0), cgpa(0.0f) {}
+
+    // Parameterized Constructor
+    Student(string name, int rollNumber, float cgpa) {
+        this->name = name;
+        this->rollNumber = rollNumber;
+        setCGPA(cgpa);  // validation inside
+    }
+
+    // Copy Constructor
+    Student(const Student& other) {
+        name = other.name;
+        rollNumber = other.rollNumber;
+        cgpa = other.cgpa;
+        courses = other.courses;
+    }
+
+    // Destructor
+    ~Student() {
+        // Vector automatically cleaned up, just for demonstration
+        cout << "Destructor called for student: " << name << endl;
+    }
+
+    // Method to add a course
+    void addCourse(const string& course) {
+        if (find(courses.begin(), courses.end(), course) != courses.end()) {
+            cout << "Course already enrolled.\n";
+        } else {
+            courses.push_back(course);
+            cout << "Course added successfully.\n";
+        }
+    }
+
+    // Method to update CGPA
+    void setCGPA(float newCGPA) {
+        if (newCGPA >= 0.0 && newCGPA <= 4.0) {
+            cgpa = newCGPA;
+        } else {
+            cout << "Invalid CGPA. Must be between 0.0 and 4.0.\n";
+        }
+    }
+
+    // Method to display student information
+    void displayInfo() const {
+        cout << "\n--- Student Information ---\n";
+        cout << "Name: " << name << "\n";
+        cout << "Roll Number: " << rollNumber << "\n";
+        cout << "CGPA: " << cgpa << "\n";
+        cout << "Courses Enrolled: ";
+        if (courses.empty()) {
+            cout << "None";
+        } else {
+            for (const auto& course : courses) {
+                cout << course << " ";
+            }
+        }
+        cout << "\n-----------------------------\n";
+    }
+
+    // Getters
+    int getRollNumber() const { return rollNumber; }
+};
+
+// -----------------------------
+// StudentManagementSystem Class
+// -----------------------------
+class StudentManagementSystem {
+private:
+    vector<Student> students;
+
+public:
+    // Add a new student
+    void addStudent(const Student& student) {
+        students.push_back(student);
+        cout << "Student added successfully.\n";
+    }
+
+    // Search student by roll number
+    Student* searchStudent(int rollNumber) {
+        for (auto& student : students) {
+            if (student.getRollNumber() == rollNumber) {
+                return &student;
+            }
+        }
+        return nullptr;
+    }
+
+    // Display all students
+    void displayAllStudents() const {
+        if (students.empty()) {
+            cout << "No student records found.\n";
+            return;
+        }
+
+        for (const auto& student : students) {
+            student.displayInfo();
+        }
+    }
+};
+
+// -----------------------------
+// Main Function (Test Interface)
+// -----------------------------
+int main() {
+    StudentManagementSystem sms;
+
+    // Creating students using different constructors
+    Student s1("Alice", 101, 3.5);
+    Student s2("Bob", 102, 3.8);
+    Student s3(s2); // Copy constructor
+
+    // Adding students
+    sms.addStudent(s1);
+    sms.addStudent(s2);
+    sms.addStudent(s3);
+
+    // Add courses to Alice
+    Student* student = sms.searchStudent(101);
+    if (student) {
+        student->addCourse("Mathematics");
+        student->addCourse("Physics");
+        student->setCGPA(3.9);
+    }
+
+    // Display all students
+    sms.displayAllStudents();
+
+    return 0;
+}
